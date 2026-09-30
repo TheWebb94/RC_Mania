@@ -1,0 +1,98 @@
+# Unreal Engine generated folders
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# Visual Studio / Rider / IDE files
+.vs/
+.idea/
+.vscode/
+
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.user
+*.userprefs
+
+# Build/debug files
+*.pdb
+*.obj
+*.ipch
+*.log
+*.tlog
+*.lastbuildstate
+*.exp
+*.lib
+*.ilk
+
+# Unreal generated project files
+*.xcodeproj
+*.xcworkspace
+*.code-workspace
+
+# UnrealBuildTool
+Engine/Programs/UnrealBuildTool/
+UnrealBuildTool/
+
+# Build output
+Build/Receipts/
+Build/BatchFiles/
+
+# Packaging / staging
+StagedBuilds/
+Saved/StagedBuilds/
+Saved/Cooked/
+Saved/Logs/
+Saved/Crashes/
+Saved/Autosaves/
+Saved/Backup/
+Saved/Config/CrashReportClient/
+
+# Cache
+.cache/
+DerivedDataCache/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Rider
+.idea/
+*.sln.iml
+
+# Visual Studio Code
+.vscode/
+
+# Unreal-specific generated files
+*.modules
+*.target
+*.version
+
+# Don't ignore actual Unreal project assets/source
+!Source/
+!Content/
+!Config/
+!Plugins/
+
+# Plugin generated folders
+Plugins/**/Binaries/
+Plugins/**/Intermediate/
+Plugins/**/Saved/
+
+# Keep plugin source/content/config
+!Plugins/**/Source/
+!Plugins/**/Content/
+!Plugins/**/Config/
+!Plugins/**/*.uplugin
