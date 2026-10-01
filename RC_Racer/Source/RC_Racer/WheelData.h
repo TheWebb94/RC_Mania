@@ -39,14 +39,17 @@ struct RC_RACER_API FWheelData
 	UStaticMeshComponent* WheelMesh;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float WantedAccelerationForce;
+	FVector WantedAccelerationForce;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float WantedSteeringForce;
+	FVector WantedSteeringForce;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector SurfaceLocation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float WheelLoad;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float FrictionCoefficient = 1.f;
 };

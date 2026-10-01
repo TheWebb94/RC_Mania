@@ -51,13 +51,16 @@ public:
 	void ApplySuspensionForce(EWheelType Wheel, float DeltaTime);
 	
 	UFUNCTION()
-	void ApplyAccelerationForce(EWheelType Wheel);
+	void GetAccelerationForce(EWheelType Wheel);
 	
 	UFUNCTION()
-	void ApplyBrakeForce(EWheelType Wheel);
+	void GetBrakeForce(EWheelType Wheel);
 	
 	UFUNCTION()
-	void ApplyGripForce(EWheelType Wheel);
+	void GetGripForce(EWheelType Wheel);
+	
+	UFUNCTION()
+	void ApplyWheelForces(EWheelType Wheel);
 	
 	UFUNCTION()
 	void ApplySteeringAngle(EWheelType Wheel);
@@ -119,5 +122,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="Engine")
 	float EnginePower = 2000.f;
 	
+	UPROPERTY(EditAnywhere, Category="Wheels")
+	float GripFactor = 1.f;
 	
+	UPROPERTY(EditAnywhere, Category="Wheels")
+	float FrictionCoefficient = 1.f;
 };
