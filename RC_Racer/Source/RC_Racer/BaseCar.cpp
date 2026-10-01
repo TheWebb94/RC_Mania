@@ -192,17 +192,17 @@ void ABaseCar::GetAccelerationForce(EWheelType Wheel)
 		Data->WantedAccelerationForce = AccelerationForce;
 		
 		
-			DrawDebugLine(
-		GetWorld(),
-		Data->SurfaceLocation,
-		Data->SurfaceLocation + AccelerationForce,
-		FColor::Red,
-		false,
-		0.0f,
-		0,
-		2.0f
-		);
-		
+		// 	DrawDebugLine(
+		// GetWorld(),
+		// Data->SurfaceLocation,
+		// Data->SurfaceLocation + AccelerationForce,
+		// FColor::Red,
+		// false,
+		// 0.0f,
+		// 0,
+		// 2.0f
+		// );
+		//
 		
 	}
 
@@ -222,7 +222,10 @@ void ABaseCar::GetGripForce(EWheelType Wheel)
 		
 		FVector wheelRight = Data->WheelMesh->GetRightVector();
 		float sideVelocity = FVector::DotProduct(wheelVelocity,	wheelRight);
-		FVector wantedWheelSideForce = -sideVelocity * Data->WheelLoad * wheelRight;
+		
+		float SideForce = -sideVelocity * LateralStiffness;
+		
+		FVector wantedWheelSideForce = SideForce * wheelRight;
 		
 		Data->WantedSteeringForce = wantedWheelSideForce;
 	}
