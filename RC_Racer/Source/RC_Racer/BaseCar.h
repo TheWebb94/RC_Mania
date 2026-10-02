@@ -130,4 +130,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wheels")
 	float LateralStiffness = 5000.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Brakes")
+	float BrakeFactor = 1.f;
 };

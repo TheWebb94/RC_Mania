@@ -42,6 +42,9 @@ struct RC_RACER_API FWheelData
 	FVector WantedAccelerationForce;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector WantedBrakeForce;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector WantedSteeringForce;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -52,4 +55,7 @@ struct RC_RACER_API FWheelData
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float FrictionCoefficient = 1.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector WheelForwardVector;
 };
