@@ -187,6 +187,9 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 	else
 	{
 		Data->bIsInContact = false;
+		Data->WheelCompression = 0.f;
+		Data->PreviousWheelCompression = 0.f;
+		
 		
 		if (Data->WheelLoad >= 0.1f) Data->WheelLoad -= .1f;
 		else Data->WheelLoad = 0.f;
