@@ -41,6 +41,9 @@ public:
 	void ToggleHandbrake(bool HandbrakeState);
 	
 	UFUNCTION(BlueprintCallable, Category="Input")
+	void Jump();
+	
+	UFUNCTION(BlueprintCallable, Category="Input")
 	void BackwardAbility();
 	
 	UFUNCTION(BlueprintCallable, Category="Input")
@@ -65,6 +68,9 @@ public:
 	UFUNCTION()
 	void ApplySteeringAngle(EWheelType Wheel);
 	
+	UFUNCTION()
+	void ApplyWheelRotation(EWheelType Wheel, float DeltaTime);
+	
 	UPROPERTY()
 	float ThrottleAmount;
 	
@@ -74,20 +80,24 @@ public:
 	UPROPERTY()
 	float SteerAmount;
 	
+	UPROPERTY()
+	bool bISHandbrakeOn = false;
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
+	
+	
+	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
 	UStaticMeshComponent* CarMesh;
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
+	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
 	UStaticMeshComponent* FLWheel;
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
+	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
 	UStaticMeshComponent* FRWheel;
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
+	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
 	UStaticMeshComponent* BLWheel;
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
+	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
 	UStaticMeshComponent* BRWheel;
 
 	
@@ -104,33 +114,69 @@ public:
 	FVector BRWheelLocation;
 	
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
-	TMap<EWheelType, FWheelData> WheelData;
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
+	
+	
+	
+	UPROPERTY()
+	TMap<EWheelType, FWheelData> WheelData;	
+	
+	
+	//////////////////////////////
+	// Suspension
+	/////////////////////////////
+	UPROPERTY(EditAnywhere, Category="BaseCar - Suspension")
 	float SuspensionLength = 40.f;
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
+	UPROPERTY(EditAnywhere, Category="BaseCar - Suspension")
 	float SuspensionForce = 10000.f;
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
-	float DamperRate = 8000.f;
+	UPROPERTY(EditAnywhere, Category="BaseCar - Suspension")
+	float DamperRate = 600.f;
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
+	
+	//////////////////////////////
+	// Steering
+	/////////////////////////////
+	UPROPERTY(EditAnywhere, Category="BaseCar - Steering")
 	float MaxSteeringAngle = 30.f;
 	
-	UPROPERTY(EditAnywhere, Category="Engine")
-	float EnginePower = 2000.f;
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
+	//////////////////////////////
+	// Engine
+	/////////////////////////////
+	UPROPERTY(EditAnywhere, Category="BaseCar - Engine")
+	float EnginePower = 800000.f;
+	
+	
+	//////////////////////////////
+	// Grip
+	/////////////////////////////
+	UPROPERTY(EditAnywhere, Category="BaseCar - Grip")
 	float GripFactor = 1.f;
 	
-	UPROPERTY(EditAnywhere, Category="Wheels")
+	UPROPERTY(EditAnywhere, Category="BaseCar - Grip")
 	float FrictionCoefficient = 1.f;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wheels")
-	float LateralStiffness = 5000.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Grip")
+	float LateralStiffness = 2.0f;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Brakes")
-	float BrakeFactor = 1.f;
+	//////////////////////////////
+	// Braking
+	/////////////////////////////
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Braking")
+	float BrakeStrength = 5000.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Braking")
+	float HandbrakeStrength = 4000.f;
+	
+	//////////////////////////////
+	// Jump
+	/////////////////////////////
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Jump")
+	float JumpStrength = 500000.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Jump")
+	int MinContactedWheelsForJump = 2;
+	
 };

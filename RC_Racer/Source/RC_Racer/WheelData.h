@@ -33,7 +33,7 @@ struct RC_RACER_API FWheelData
 	FVector SuspensionLocation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bISInContact;
+	bool bIsInContact;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* WheelMesh;
@@ -48,6 +48,10 @@ struct RC_RACER_API FWheelData
 	FVector WantedSteeringForce;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxTotalWheelForce;
+	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector SurfaceLocation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -58,4 +62,10 @@ struct RC_RACER_API FWheelData
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector WheelForwardVector;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float WheelForwardSpeed;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float WheelRotation;
 };

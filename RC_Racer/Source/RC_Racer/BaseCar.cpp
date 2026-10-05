@@ -115,6 +115,11 @@ void ABaseCar::Tick(float DeltaTime)
 		ApplyWheelForces(Pair.Key);
 	}
 	
+	for (const auto& Pair : WheelData)
+	{
+		ApplyWheelRotation(Pair.Key, DeltaTime);
+	}
+	
 	
 	
 }
@@ -128,16 +133,19 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 	FVector Start = CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation);
 	FVector End = Start - CarMesh->GetUpVector() * (SuspensionLength + Data->WheelRadius);
 
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
 	bool bHit = GetWorld()->LineTraceSingleByChannel(
 		Hit,
 		Start,
 		End,
-		ECC_Visibility
+		ECC_Visibility,
+		Params
 	);
 	
 	if (bHit)
 	{
-		Data->bISInContact = true;
+		Data->bIsInContact = true;
 		Data->SurfaceLocation = Hit.Location;
 		
 		float Distance = (Hit.Location - Start).Size();
@@ -149,6 +157,9 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 		FVector SpringForce = CarMesh->GetUpVector() * Compression * SuspensionForce; 		
 		CarMesh->AddForceAtLocation(SpringForce, Start);
 		
+	
+		
+		
 		// Damper Force
 		FVector DamperForce = (
 			(Data->WheelCompression - Data->PreviousWheelCompression)
@@ -158,10 +169,13 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 		
 		CarMesh->AddForceAtLocation(DamperForce, Start);
 		
+		
+		
+		
 		Data->WheelMesh->SetRelativeLocation(
 				Data->SuspensionLocation -
-				(CarMesh->GetUpVector() * SuspensionLength/2) +
-				(CarMesh->GetUpVector() * Compression) 				
+				(FVector::UpVector * SuspensionLength/2) +
+				(FVector::UpVector * Compression) 				
 		);
 		
 		FVector TotalForce = SpringForce + DamperForce;
@@ -172,13 +186,25 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 
 	else
 	{
-		Data->bISInContact = false;
-		Data->WheelLoad = 0.0f;
+		Data->bIsInContact = false;
+		
+		if (Data->WheelLoad >= 0.1f) Data->WheelLoad -= .1f;
+		else Data->WheelLoad = 0.f;
+		
 		Data->WheelMesh->SetRelativeLocation(
 				Data->SuspensionLocation -
-				(CarMesh->GetUpVector() * SuspensionLength/2) 				
+				(FVector::UpVector * SuspensionLength/2) 				
 		);
 	}
+	
+	// DrawDebugString(
+	// 			GetWorld(),
+	// 			CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation + FVector::UpVector * 300.f),
+	// 			FString::Printf(TEXT("WheelLoad: %.1f"), Data->WheelLoad),
+	// 			nullptr,
+	// 			FColor::White,
+	// 			0.0f,
+	// 			true);
 	
 }
 
@@ -192,10 +218,25 @@ void ABaseCar::GetAccelerationForce(EWheelType Wheel)
 	
 	FWheelData* Data = WheelData.Find(Wheel);
 	
-	if (Data->bISInContact)
+	if (Data->bIsInContact)
 	{
 		FVector AccelerationForce = Data->WheelForwardVector * (EnginePower * ThrottleAmount);	
 		Data->WantedAccelerationForce = AccelerationForce;	
+		
+		// DrawDebugLine(
+		// GetWorld(),
+		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation),
+		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation) + Data->WantedAccelerationForce * .001f,
+		// FColor::Red,
+		// false,
+		// 0.0f,
+		// 0,
+		// 2.0f
+		// );
+	}
+	else
+	{
+		Data->WantedAccelerationForce = FVector::ZeroVector;     
 	}
 
 }
@@ -204,20 +245,55 @@ void ABaseCar::GetBrakeForce(EWheelType Wheel)
 {
 	FWheelData* Data = WheelData.Find(Wheel);
 
-	if (Data->bISInContact)
+	if (Data->bIsInContact)
 	{
+		// Get speed at the point of the wheel
 		FVector wheelVelocity = CarMesh->GetPhysicsLinearVelocityAtPoint(Data->SurfaceLocation);		
 		
+		// Get the speed in the forward direction of the wheel
 		FVector wheelForward = Data->WheelForwardVector;
 		float linearVelocity = FVector::DotProduct(wheelVelocity,wheelForward);
 		
-		float LinearForce = -linearVelocity * BrakeFactor * BrakeAmount;  
+		// Get the force of brakes
+		float LinearBrakeForce = -linearVelocity * BrakeStrength * BrakeAmount;  
 		
+		// Get the force of the handbrake
+		float LinearHandBrakeForce = 0.f;
+		if (bISHandbrakeOn && (Wheel == EWheelType::BL || Wheel == EWheelType::BR))
+		{
+			LinearHandBrakeForce = -linearVelocity * HandbrakeStrength;
+		}
+		
+		// apply the highest force betweeen handbrake and brake 
+		float LinearForce;
+		float HighestForce = FMath::Max(FMath::Abs(LinearBrakeForce), FMath::Abs(LinearHandBrakeForce));	
+		if (HighestForce == FMath::Abs(LinearBrakeForce))
+		{
+			LinearForce = LinearBrakeForce;
+		}
+		else
+		{
+			LinearForce = LinearHandBrakeForce;
+		}
 		FVector wantedWheelBrakeForce = LinearForce * wheelForward;
-		
-		
+				
 		
 		Data->WantedBrakeForce = wantedWheelBrakeForce;
+		
+		// DrawDebugLine(
+		// GetWorld(),
+		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation),
+		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation) + Data->WantedBrakeForce * .001f,
+		// FColor::Blue,
+		// false,
+		// 0.0f,
+		// 0,
+		// 2.0f
+		// );
+	}
+	else
+	{
+		Data->WantedBrakeForce = FVector::ZeroVector;
 	}
 }
 
@@ -225,47 +301,50 @@ void ABaseCar::GetGripForce(EWheelType Wheel)
 {
 	FWheelData* Data = WheelData.Find(Wheel);
 
-	if (Data->bISInContact)
+	if (Data->bIsInContact)
 	{
-		FVector wheelVelocity = CarMesh->GetPhysicsLinearVelocityAtPoint(Data->SurfaceLocation);		
+		FVector wheelVelocity = CarMesh->GetPhysicsLinearVelocityAtPoint(Data->SurfaceLocation);	
 		
-		FVector wheelRight = Data->WheelMesh->GetRightVector();
-		float sideVelocity = FVector::DotProduct(wheelVelocity,	wheelRight);
+		Data->WheelForwardSpeed = FVector::DotProduct(wheelVelocity,	Data->WheelForwardVector);
+		
+		FVector WheelUp = CarMesh->GetUpVector();
+
+		FVector WheelRight =
+			FVector::CrossProduct(
+				WheelUp,
+				Data->WheelForwardVector
+			).GetSafeNormal();
+		float sideVelocity = FVector::DotProduct(wheelVelocity,	WheelRight);
 		
 		float SideForce = -sideVelocity * Data->WheelLoad * LateralStiffness;
 		
-		FVector wantedWheelSideForce = SideForce * wheelRight;
+		FVector wantedWheelSideForce = SideForce * WheelRight;
 		
 		Data->WantedSteeringForce = wantedWheelSideForce;
 		
-		DrawDebugString(
-				GetWorld(),
-				CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation),
-				FString::Printf(TEXT("sideVelocity: %.1f"), sideVelocity),
-				nullptr,
-				FColor::White,
-				0.0f,
-				true);
 		
 		
-		DrawDebugLine(
-		GetWorld(),
-		CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation),
-		CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation) + wheelRight * 100.f,
-		FColor::Red,
-		false,
-		0.0f,
-		0,
-		2.0f
-		);
+		
+		// DrawDebugLine(
+		// GetWorld(),
+		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation),
+		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation) + Data->WantedSteeringForce * .001f,
+		// FColor::White,
+		// false,
+		// 0.0f,
+		// 0,
+		// 2.0f
+		// );
+	}
+	else
+	{
+		Data->WantedSteeringForce = FVector::ZeroVector;
 	}
 }
 
 void ABaseCar::ApplyWheelForces(EWheelType Wheel)
 {
 	FWheelData* Data = WheelData.Find(Wheel);
-	
-	
 
 	
 	FVector CombinedForce =
@@ -279,13 +358,10 @@ void ABaseCar::ApplyWheelForces(EWheelType Wheel)
 	
 	float MaxWheelForce = FrictionCoefficient * Data->WheelLoad * GripFactor * 100;
 	
-	float ClampedWheelForceMagnitude = FMath::Clamp(ForceMagnitude, -MaxWheelForce, MaxWheelForce);
+	float ClampedWheelForceMagnitude = FMath::Clamp(ForceMagnitude, 0, MaxWheelForce);
 	FVector CombinedClampedWheelForce = Direction * ClampedWheelForceMagnitude;
 
-	CarMesh->AddForceAtLocation(CombinedClampedWheelForce, Data->SurfaceLocation);			
-
-	
-	
+	CarMesh->AddForceAtLocation(CombinedClampedWheelForce, Data->SurfaceLocation);				
 }
 
 void ABaseCar::ApplySteeringAngle(EWheelType Wheel)
@@ -306,7 +382,53 @@ void ABaseCar::ApplySteeringAngle(EWheelType Wheel)
 			CarMesh->GetUpVector()
 		);
 	
-	Data->WheelMesh->SetRelativeRotation(FRotator(0, SteerAngle, 0));
+}
+
+void ABaseCar::ApplyWheelRotation(EWheelType Wheel, float DeltaTime)
+{
+	FWheelData* Data = WheelData.Find(Wheel);
+
+	
+	if (Wheel == EWheelType::FL || Wheel == EWheelType::FR)
+	{
+		float SteerAngle = SteerAmount * MaxSteeringAngle;
+		
+		float AngularVelocity = Data->WheelForwardSpeed / Data->WheelRadius;
+		float ChangeInDegrees =  FMath::RadiansToDegrees(AngularVelocity) * DeltaTime;
+		
+		Data->WheelRotation -= ChangeInDegrees;
+		if (Data->WheelRotation > 360.f) Data->WheelRotation -= 360.f; // Keeps value within 0 -360
+		if (Data->WheelRotation < 0.f) Data->WheelRotation += 360.f; // Keeps value within 0 -360
+		
+		Data->WheelMesh->SetRelativeRotation(FRotator(Data->WheelRotation, SteerAngle, 0));
+	}
+	else
+	{
+		float NormalAngularVelocity = Data->WheelForwardSpeed / Data->WheelRadius;
+		float EngineAddedVelocity = 0.f;
+		
+		if (Data->WantedAccelerationForce.Size() > Data->MaxTotalWheelForce)
+		{
+			float Slippage = Data->WantedAccelerationForce.Size() - Data->MaxTotalWheelForce;
+			
+			float WheelSpinFactor = 0.00005f;
+			EngineAddedVelocity = Slippage * WheelSpinFactor;	
+		}
+		
+		float AngularVelocity = NormalAngularVelocity + EngineAddedVelocity;		
+		float ChangeInDegrees =  FMath::RadiansToDegrees(AngularVelocity) * DeltaTime;		
+		
+		if (bISHandbrakeOn)
+		{
+			ChangeInDegrees = 0.f;
+		}
+		
+		Data->WheelRotation -= ChangeInDegrees;
+		if (Data->WheelRotation > 360.f) Data->WheelRotation -= 360.f; // Keeps value within 0 -360
+		if (Data->WheelRotation < 0.f) Data->WheelRotation += 360.f; // Keeps value within 0 -360		
+		
+		Data->WheelMesh->SetRelativeRotation(FRotator(Data->WheelRotation, 0, 0));
+	}
 }
 
 
@@ -327,6 +449,28 @@ void ABaseCar::Steer(float SteerInput)
 
 void ABaseCar::ToggleHandbrake(bool HandbrakeState)
 {
+	bISHandbrakeOn = HandbrakeState;
+}
+
+void ABaseCar::Jump()
+{
+	// Get how many wheels are touching the ground
+	int WheelsInContact = 0;
+	for (const auto& Pair : WheelData)
+	{
+		if (Pair.Value.bIsInContact == true)
+		{
+			WheelsInContact++;
+		}
+	}
+	
+	// if enough wheels are touching ground, perform jump
+	if (WheelsInContact >= MinContactedWheelsForJump)
+	{
+		FVector UpImpulse = FVector::UpVector * JumpStrength;
+		CarMesh->AddImpulse(UpImpulse);
+	}
+
 }
 
 void ABaseCar::BackwardAbility()
