@@ -124,7 +124,7 @@ public:
 	
 	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<EWheelType, FWheelData> WheelData;	
 	
 	
@@ -147,6 +147,11 @@ public:
 	UPROPERTY(EditAnywhere, Category="BaseCar - Steering")
 	float MaxSteeringAngle = 30.f;
 	
+	UPROPERTY()
+	float WheelBase = 200.f;
+	
+	UPROPERTY()
+	float FrontTrackWidth = 200.f;
 	
 	//////////////////////////////
 	// Engine

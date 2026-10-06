@@ -73,6 +73,9 @@ void ABaseCar::BeginPlay()
 	BRWheelData.SuspensionLocation = BRWheel->GetRelativeLocation() + CarMesh->GetUpVector() * SuspensionLength/2;
 	BRWheelData.WheelRadius = BRWheel->Bounds.BoxExtent.Z;
 	BRWheelData.WheelMesh = BRWheel;
+	
+	WheelBase = FLWheel->GetRelativeLocation().X - BLWheel->GetRelativeLocation().X;
+	FrontTrackWidth = FRWheel->GetRelativeLocation().Y - FLWheel->GetRelativeLocation().Y;
 }
 
 // Called every frame
@@ -407,11 +410,43 @@ void ABaseCar::ApplySteeringAngle(EWheelType Wheel)
 		return;
 	}
 	
-	float SteerAngle = SteerAmount * MaxSteeringAngle;
+	float TargetSteeringAngle = FMath::DegreesToRadians(SteerAmount * MaxSteeringAngle);
+	bool bIsWheelInner; 
+	
+	// Find the inner and outer wheels for steering
+	if ((Wheel == EWheelType::FL && TargetSteeringAngle < 0)|| Wheel == EWheelType::FR && TargetSteeringAngle > 0)
+	{
+		bIsWheelInner = true;
+	}
+	else
+	{
+		bIsWheelInner = false;
+	}
+	
+	float SinAngle = FMath::Sin(TargetSteeringAngle);
+	float CosAngle = FMath::Cos(TargetSteeringAngle);
+
+	float Top = 2.0f * WheelBase * SinAngle;
+	
+	float Bottom;
+	if (bIsWheelInner)
+	{
+		Bottom =
+			2.0f * WheelBase * CosAngle -
+			FrontTrackWidth * SinAngle;
+	}
+	else
+	{
+		Bottom =
+			2.0f * WheelBase * CosAngle +
+			FrontTrackWidth * SinAngle;
+	}
+	
+	Data->SteerAngle = FMath::RadiansToDegrees(FMath::Atan2(Top, Bottom));
 	
 	Data->WheelForwardVector =
 		CarMesh->GetForwardVector().RotateAngleAxis(
-			SteerAngle,
+			Data->SteerAngle,
 			CarMesh->GetUpVector()
 		);
 	
@@ -424,7 +459,6 @@ void ABaseCar::ApplyWheelRotation(EWheelType Wheel, float DeltaTime)
 	
 	if (Wheel == EWheelType::FL || Wheel == EWheelType::FR)
 	{
-		float SteerAngle = SteerAmount * MaxSteeringAngle;
 		
 		float AngularVelocity = Data->WheelForwardSpeed / Data->WheelRadius;
 		float ChangeInDegrees =  FMath::RadiansToDegrees(AngularVelocity) * DeltaTime;
@@ -433,7 +467,7 @@ void ABaseCar::ApplyWheelRotation(EWheelType Wheel, float DeltaTime)
 		if (Data->WheelRotation > 360.f) Data->WheelRotation -= 360.f; // Keeps value within 0 -360
 		if (Data->WheelRotation < 0.f) Data->WheelRotation += 360.f; // Keeps value within 0 -360
 		
-		Data->WheelMesh->SetRelativeRotation(FRotator(Data->WheelRotation, SteerAngle, 0));
+		Data->WheelMesh->SetRelativeRotation(FRotator(Data->WheelRotation, Data->SteerAngle, 0));
 	}
 	else
 	{

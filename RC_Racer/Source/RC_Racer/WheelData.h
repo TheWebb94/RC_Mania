@@ -68,4 +68,7 @@ struct RC_RACER_API FWheelData
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float WheelRotation;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SteerAngle;
 };
