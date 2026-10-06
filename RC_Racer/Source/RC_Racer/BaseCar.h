@@ -147,6 +147,9 @@ public:
 	/////////////////////////////
 	UPROPERTY(EditAnywhere, Category="BaseCar - Engine")
 	float EnginePower = 800000.f;
+
+	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")
+	float EngineMaxSpeed = 800.f;
 	
 	
 	//////////////////////////////
