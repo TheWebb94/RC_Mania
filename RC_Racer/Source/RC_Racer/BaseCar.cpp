@@ -92,11 +92,7 @@ void ABaseCar::Tick(float DeltaTime)
 		ApplySteeringAngle(Pair.Key);
 	}
 	
-	// for each wheel get Acceleration forces using relevant wheel data
-	for (const auto& Pair : WheelData)
-	{
-		GetAccelerationForce(Pair.Key);
-	}
+	
 	
 	// for each wheel get Brake forces using relevant wheel data
 	for (const auto& Pair : WheelData)
@@ -108,6 +104,12 @@ void ABaseCar::Tick(float DeltaTime)
 	for (const auto& Pair : WheelData)
 	{
 		GetGripForce(Pair.Key);
+	}
+
+	// for each wheel get Acceleration forces using relevant wheel data
+	for (const auto& Pair : WheelData)
+	{
+		GetAccelerationForce(Pair.Key);
 	}
 	
 	for (const auto& Pair : WheelData)
@@ -223,7 +225,21 @@ void ABaseCar::GetAccelerationForce(EWheelType Wheel)
 	
 	if (Data->bIsInContact)
 	{
-		FVector AccelerationForce = Data->WheelForwardVector * (EnginePower * ThrottleAmount);	
+
+		// Get speed at the point of the wheel
+		FVector wheelVelocity = CarMesh->GetPhysicsLinearVelocityAtPoint(Data->SurfaceLocation);
+
+
+		// Get the speed in the forward direction of the wheel
+		FVector wheelForward = Data->WheelForwardVector;
+		float CurrentSpeed = FVector::DotProduct(wheelVelocity, wheelForward);
+
+
+		// Rate that reduces engine power by how close the speed is to the max speed
+		float EngineReductionRate = 1.f - (CurrentSpeed / EngineMaxSpeed);
+
+
+		FVector AccelerationForce = Data->WheelForwardVector * (EngineReductionRate * EnginePower * ThrottleAmount);	
 		Data->WantedAccelerationForce = AccelerationForce;	
 		
 		// DrawDebugLine(
