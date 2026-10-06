@@ -71,6 +71,12 @@ public:
 	UFUNCTION()
 	void ApplyWheelRotation(EWheelType Wheel, float DeltaTime);
 	
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateTyreSmoke(EWheelType Wheel, bool bIsSmokeOn);
+
+	
+	
 	UPROPERTY()
 	float ThrottleAmount;
 	
@@ -182,4 +188,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Jump")
 	int MinContactedWheelsForJump = 2;
 	
+	
+	//////////////////////////////
+	// Effects
+	/////////////////////////////
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Effects")
+	float TyreSmokeRate = 2.f;
+
 };

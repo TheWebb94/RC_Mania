@@ -200,6 +200,8 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 				Data->SuspensionLocation -
 				(FVector::UpVector * SuspensionLength/2) 				
 		);
+		
+		UpdateTyreSmoke(WheelType, false);
 	}
 	
 	// DrawDebugString(
@@ -380,7 +382,19 @@ void ABaseCar::ApplyWheelForces(EWheelType Wheel)
 	float ClampedWheelForceMagnitude = FMath::Clamp(ForceMagnitude, 0, MaxWheelForce);
 	FVector CombinedClampedWheelForce = Direction * ClampedWheelForceMagnitude;
 
-	CarMesh->AddForceAtLocation(CombinedClampedWheelForce, Data->SurfaceLocation);				
+	CarMesh->AddForceAtLocation(CombinedClampedWheelForce, Data->SurfaceLocation);			
+	
+	
+	if (ForceMagnitude / MaxWheelForce > TyreSmokeRate)
+	{
+		UpdateTyreSmoke(Wheel, true);
+	}
+	else
+	{
+		UpdateTyreSmoke(Wheel, false);
+	}
+	
+	
 }
 
 void ABaseCar::ApplySteeringAngle(EWheelType Wheel)
