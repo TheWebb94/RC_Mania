@@ -38,10 +38,10 @@ ABaseCar::ABaseCar()
 	BRWheel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	
-	FLWheel->SetRelativeLocation(FVector(100.f, -100.f, -50.f));
-	FRWheel->SetRelativeLocation(FVector(100.f, 100.f, -50.f));
-	BLWheel->SetRelativeLocation(FVector(-100.f, -100.f, -50.f));
-	BRWheel->SetRelativeLocation(FVector(-100.f, 100.f, -50.f));
+	FLWheel->SetRelativeLocation(FVector(75.f, -60.f, -20.f));
+	FRWheel->SetRelativeLocation(FVector(75.f, 60.f, -20.f));
+	BLWheel->SetRelativeLocation(FVector(-75.f, -60.f, -20.f));
+	BRWheel->SetRelativeLocation(FVector(-75.f, 60.f, -20.f));
 	
 	WheelData.Add(EWheelType::FL, FWheelData());
 	WheelData.Add(EWheelType::FR, FWheelData());
@@ -56,22 +56,22 @@ void ABaseCar::BeginPlay()
 	
 	FWheelData& FLWheelData = WheelData[EWheelType::FL];	
 	FLWheelData.SuspensionLocation = FLWheel->GetRelativeLocation() + CarMesh->GetUpVector() * SuspensionLength/2;
-	FLWheelData.WheelRadius = FLWheel->Bounds.BoxExtent.Z;
+	FLWheelData.WheelRadius = FLWheel->Bounds.BoxExtent.Z * 0.3f;
 	FLWheelData.WheelMesh = FLWheel;
 	
 	FWheelData& FRWheelData = WheelData[EWheelType::FR];
 	FRWheelData.SuspensionLocation = FRWheel->GetRelativeLocation() + CarMesh->GetUpVector() * SuspensionLength/2;
-	FRWheelData.WheelRadius = FRWheel->Bounds.BoxExtent.Z;
+	FRWheelData.WheelRadius = FRWheel->Bounds.BoxExtent.Z * 0.3f;
 	FRWheelData.WheelMesh = FRWheel;
 	
 	FWheelData& BLWheelData = WheelData[EWheelType::BL];
 	BLWheelData.SuspensionLocation = BLWheel->GetRelativeLocation() + CarMesh->GetUpVector() * SuspensionLength/2;
-	BLWheelData.WheelRadius = BLWheel->Bounds.BoxExtent.Z;
+	BLWheelData.WheelRadius = BLWheel->Bounds.BoxExtent.Z * 0.3f;
 	BLWheelData.WheelMesh = BLWheel;
 	
 	FWheelData& BRWheelData = WheelData[EWheelType::BR];
 	BRWheelData.SuspensionLocation = BRWheel->GetRelativeLocation() + CarMesh->GetUpVector() * SuspensionLength/2;
-	BRWheelData.WheelRadius = BRWheel->Bounds.BoxExtent.Z;
+	BRWheelData.WheelRadius = BRWheel->Bounds.BoxExtent.Z * 0.3f;
 	BRWheelData.WheelMesh = BRWheel;
 	
 	WheelBase = FLWheel->GetRelativeLocation().X - BLWheel->GetRelativeLocation().X;
