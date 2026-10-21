@@ -81,35 +81,7 @@ void ABaseCar::BeginPlay()
 // Called every frame
 void ABaseCar::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(
-			1,
-			0.0f,
-			FColor::Green,
-			FString::Printf(TEXT("Throttle Amount: %.2f"), ThrottleAmount)
-		);
-
-		GEngine->AddOnScreenDebugMessage(
-			2,
-			0.0f,
-			FColor::Red,
-			FString::Printf(TEXT("Brake Amount: %.2f"), BrakeAmount)
-		);
-		
-		GEngine->AddOnScreenDebugMessage(
-		 3,
-		 0.0f,
-		 FColor::Yellow,
-		 FString::Printf(
-			 TEXT("Is In Reverse: %s"),
-			 bIsInReverse ? TEXT("true") : TEXT("false")
-		 )
-	 );
-	}
-	
+	Super::Tick(DeltaTime);	
 	
 	// for each wheel apply suspension forces using relevant wheel data
 	for (const auto& Pair : WheelData)

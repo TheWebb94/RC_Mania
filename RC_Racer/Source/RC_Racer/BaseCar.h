@@ -120,7 +120,7 @@ public:
 	
 	
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	TMap<EWheelType, FWheelData> WheelData;	
 	
 	
