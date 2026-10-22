@@ -81,8 +81,8 @@ void ABaseCar::BeginPlay()
 // Called every frame
 void ABaseCar::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
+	Super::Tick(DeltaTime);	
+	
 	// for each wheel apply suspension forces using relevant wheel data
 	for (const auto& Pair : WheelData)
 	{
@@ -206,16 +206,6 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 		
 		UpdateTyreSmoke(WheelType, false);
 	}
-	
-	// DrawDebugString(
-	// 			GetWorld(),
-	// 			CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation + FVector::UpVector * 300.f),
-	// 			FString::Printf(TEXT("WheelLoad: %.1f"), Data->WheelLoad),
-	// 			nullptr,
-	// 			FColor::White,
-	// 			0.0f,
-	// 			true);
-	
 }
 
 void ABaseCar::GetAccelerationForce(EWheelType Wheel)
@@ -241,22 +231,19 @@ void ABaseCar::GetAccelerationForce(EWheelType Wheel)
 
 
 		// Rate that reduces engine power by how close the speed is to the max speed
-		float EngineReductionRate = 1.f - (CurrentSpeed / EngineMaxSpeed);
-
-
-		FVector AccelerationForce = Data->WheelForwardVector * (EngineReductionRate * EnginePower * ThrottleAmount);	
-		Data->WantedAccelerationForce = AccelerationForce;	
-		
-		// DrawDebugLine(
-		// GetWorld(),
-		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation),
-		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation) + Data->WantedAccelerationForce * .001f,
-		// FColor::Red,
-		// false,
-		// 0.0f,
-		// 0,
-		// 2.0f
-		// );
+		FVector AccelerationForce;
+		if (!bIsInReverse)
+		{
+			float EngineReductionRate = 1.f - (CurrentSpeed / MaxSpeed);
+			AccelerationForce = Data->WheelForwardVector * (EngineReductionRate * EnginePower * ThrottleAmount);
+		}
+		else
+		{
+			float EngineReductionRate = 1.f - (CurrentSpeed / ReverseMaxSpeed);
+			AccelerationForce = -Data->WheelForwardVector * (EngineReductionRate * EnginePower * ThrottleAmount);
+		}
+		 	
+		Data->WantedAccelerationForce = AccelerationForce;			
 	}
 	else
 	{
@@ -302,18 +289,7 @@ void ABaseCar::GetBrakeForce(EWheelType Wheel)
 		FVector wantedWheelBrakeForce = LinearForce * wheelForward;
 				
 		
-		Data->WantedBrakeForce = wantedWheelBrakeForce;
-		
-		// DrawDebugLine(
-		// GetWorld(),
-		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation),
-		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation) + Data->WantedBrakeForce * .001f,
-		// FColor::Blue,
-		// false,
-		// 0.0f,
-		// 0,
-		// 2.0f
-		// );
+		Data->WantedBrakeForce = wantedWheelBrakeForce;	
 	}
 	else
 	{
@@ -344,21 +320,7 @@ void ABaseCar::GetGripForce(EWheelType Wheel)
 		
 		FVector wantedWheelSideForce = SideForce * WheelRight;
 		
-		Data->WantedSteeringForce = wantedWheelSideForce;
-		
-		
-		
-		
-		// DrawDebugLine(
-		// GetWorld(),
-		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation),
-		// CarMesh->GetComponentTransform().TransformPosition(Data->SuspensionLocation) + Data->WantedSteeringForce * .001f,
-		// FColor::White,
-		// false,
-		// 0.0f,
-		// 0,
-		// 2.0f
-		// );
+		Data->WantedSteeringForce = wantedWheelSideForce;		
 	}
 	else
 	{
@@ -501,12 +463,46 @@ void ABaseCar::ApplyWheelRotation(EWheelType Wheel, float DeltaTime)
 
 void ABaseCar::Accelerate(float Throttle)
 {
-	ThrottleAmount = Throttle;
+	FVector Velocity = CarMesh->GetPhysicsLinearVelocity();
+	float CurrentSpeed = Velocity.Size();
+	
+	if (!bIsInReverse)
+	{
+		ThrottleAmount = Throttle;
+	}
+	else
+	{
+		BrakeAmount = Throttle;
+		if (CurrentSpeed < MinSpeedForReverse)
+		{
+			bIsInReverse = false;
+			ThrottleAmount = 0.f;
+			BrakeAmount = 0.f;
+		}
+	}
+	
 }
 
 void ABaseCar::Brake(float BrakeInput)
 {
-	BrakeAmount = BrakeInput;
+	FVector Velocity = CarMesh->GetPhysicsLinearVelocity();
+	float CurrentSpeed = Velocity.Size();
+	
+	if (!bIsInReverse)
+	{
+		BrakeAmount = BrakeInput;
+		if (CurrentSpeed < MinSpeedForReverse)
+		{
+			bIsInReverse = true;
+			BrakeAmount = 0.f;
+			ThrottleAmount = 0.f;
+		}
+	}
+	else
+	{
+		ThrottleAmount = BrakeInput;
+	}
+	
 }
 
 void ABaseCar::Steer(float SteerInput)
@@ -540,12 +536,5 @@ void ABaseCar::Jump()
 
 }
 
-void ABaseCar::BackwardAbility()
-{
-}
-
-void ABaseCar::ForwardAbility()
-{
-}
 
 

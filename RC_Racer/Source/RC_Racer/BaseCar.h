@@ -43,11 +43,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	void Jump();
 	
-	UFUNCTION(BlueprintCallable, Category="Input")
-	void BackwardAbility();
 	
-	UFUNCTION(BlueprintCallable, Category="Input")
-	void ForwardAbility();
 
 	
 	UFUNCTION()
@@ -124,7 +120,7 @@ public:
 	
 	
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	TMap<EWheelType, FWheelData> WheelData;	
 	
 	
@@ -157,10 +153,19 @@ public:
 	// Engine
 	/////////////////////////////
 	UPROPERTY(EditAnywhere, Category="BaseCar - Engine")
-	float EnginePower = 800000.f;
+	float EnginePower = 400000.f;
 
 	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")
-	float EngineMaxSpeed = 800.f;
+	float MaxSpeed = 3000.f;
+	
+	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")
+    float ReverseMaxSpeed = 2000.f;
+	
+	UPROPERTY(BlueprintReadWrite, Category = "BaseCar - Engine")
+	bool bIsInReverse = false;
+	
+	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")
+	float MinSpeedForReverse = 20.f;
 	
 	
 	//////////////////////////////
