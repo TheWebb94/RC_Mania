@@ -140,6 +140,8 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
+	Params.bReturnPhysicalMaterial = true;
+	
 	bool bHit = GetWorld()->LineTraceSingleByChannel(
 		Hit,
 		Start,
@@ -152,6 +154,34 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 	{
 		Data->bIsInContact = true;
 		Data->SurfaceLocation = Hit.Location;
+		
+		UPhysicalMaterial* PhysMat = Hit.PhysMaterial.Get();
+
+		if (PhysMat == DirtMaterial)
+		{
+			Data->FrictionCoefficient = 0.7f;
+			Data->SurfaceType = ESurfaceType::Dirt;
+		}
+		else if (PhysMat == SandMaterial)
+		{
+			Data->SurfaceType = ESurfaceType::Sand;
+		}
+		else if (PhysMat == CarpetMaterial)
+		{
+			Data->SurfaceType = ESurfaceType::Carpet;
+		}
+		else if (PhysMat == RoadMaterial)
+		{
+			Data->FrictionCoefficient = 1.f;
+
+			Data->SurfaceType = ESurfaceType::Road;
+		}
+		else
+		{
+			Data->SurfaceType = ESurfaceType::None;		
+		}
+
+		
 		
 		float Distance = (Hit.Location - Start).Size();
 		
@@ -342,7 +372,7 @@ void ABaseCar::ApplyWheelForces(EWheelType Wheel)
 	
 	FVector Direction = CombinedForce.GetSafeNormal();
 	
-	float MaxWheelForce = FrictionCoefficient * Data->WheelLoad * GripFactor * 100;
+	float MaxWheelForce = Data->FrictionCoefficient * Data->WheelLoad * GripFactor * 100;
 	
 	float ClampedWheelForceMagnitude = FMath::Clamp(ForceMagnitude, 0, MaxWheelForce);
 	FVector CombinedClampedWheelForce = Direction * ClampedWheelForceMagnitude;
@@ -357,9 +387,7 @@ void ABaseCar::ApplyWheelForces(EWheelType Wheel)
 	else
 	{
 		UpdateTyreSmoke(Wheel, false);
-	}
-	
-	
+	}		
 }
 
 void ABaseCar::ApplySteeringAngle(EWheelType Wheel)

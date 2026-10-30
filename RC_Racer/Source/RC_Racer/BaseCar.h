@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Components/StaticMeshComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "WheelType.h"
 #include "WheelData.h"
 #include "BaseCar.generated.h"
@@ -87,7 +88,7 @@ public:
 	
 	
 	
-	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* CarMesh;
 	
 	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
@@ -117,7 +118,17 @@ public:
 	
 	
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
+	TObjectPtr<UPhysicalMaterial> RoadMaterial;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
+	TObjectPtr<UPhysicalMaterial> CarpetMaterial;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
+	TObjectPtr<UPhysicalMaterial> DirtMaterial;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
+	TObjectPtr<UPhysicalMaterial> SandMaterial;
 	
 	
 	UPROPERTY()
