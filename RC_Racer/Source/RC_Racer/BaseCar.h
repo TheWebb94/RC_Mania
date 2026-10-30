@@ -163,10 +163,10 @@ public:
 	//////////////////////////////
 	// Engine
 	/////////////////////////////
-	UPROPERTY(EditAnywhere, Category="BaseCar - Engine")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Engine")
 	float EnginePower = 400000.f;
 
-	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCar - Engine")
 	float MaxSpeed = 3000.f;
 	
 	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")
