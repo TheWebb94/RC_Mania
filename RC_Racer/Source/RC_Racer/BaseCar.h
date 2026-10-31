@@ -91,16 +91,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* CarMesh;
 	
-	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* FLWheel;
 	
-	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* FRWheel;
 	
-	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* BLWheel;
 	
-	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* BRWheel;
 
 	
