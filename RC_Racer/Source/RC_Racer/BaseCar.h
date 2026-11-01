@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Components/StaticMeshComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "WheelType.h"
 #include "WheelData.h"
 #include "BaseCar.generated.h"
@@ -90,16 +91,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* CarMesh;
 	
-	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* FLWheel;
 	
-	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* FRWheel;
 	
-	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* BLWheel;
 	
-	UPROPERTY(EditAnywhere, Category="BaseCar - Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* BRWheel;
 
 	
@@ -117,7 +118,17 @@ public:
 	
 	
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
+	TObjectPtr<UPhysicalMaterial> RoadMaterial;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
+	TObjectPtr<UPhysicalMaterial> CarpetMaterial;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
+	TObjectPtr<UPhysicalMaterial> DirtMaterial;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
+	TObjectPtr<UPhysicalMaterial> SandMaterial;
 	
 	
 	UPROPERTY()
@@ -152,10 +163,10 @@ public:
 	//////////////////////////////
 	// Engine
 	/////////////////////////////
-	UPROPERTY(EditAnywhere, Category="BaseCar - Engine")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Engine")
 	float EnginePower = 400000.f;
 
-	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCar - Engine")
 	float MaxSpeed = 3000.f;
 	
 	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")

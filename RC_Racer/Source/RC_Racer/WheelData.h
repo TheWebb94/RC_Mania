@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "WheelType.h"
 #include "Components/StaticMeshComponent.h"
+#include "SurfaceType.h"
 #include "WheelData.generated.h"
 
 /**
@@ -71,4 +72,7 @@ struct RC_RACER_API FWheelData
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SteerAngle;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ESurfaceType SurfaceType;
 };
