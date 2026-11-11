@@ -14,5 +14,6 @@ enum class ESurfaceType : uint8
 	Road,
 	Carpet,
 	Sand,
-	Dirt
+	Dirt,
+	Oil
 };

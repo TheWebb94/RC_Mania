@@ -70,7 +70,7 @@ public:
 	
 	
 	UFUNCTION(BlueprintImplementableEvent)
-	void UpdateTyreSmoke(EWheelType Wheel, bool bIsSmokeOn);
+	void UpdateTyreSmoke(EWheelType Wheel, ESurfaceType Surface, bool bIsOn);
 
 	
 	
@@ -130,8 +130,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
 	TObjectPtr<UPhysicalMaterial> SandMaterial;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
+    TObjectPtr<UPhysicalMaterial> OilMaterial;
 	
-	UPROPERTY()
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TMap<EWheelType, FWheelData> WheelData;	
 	
 	
@@ -215,5 +218,11 @@ public:
 	/////////////////////////////
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Effects")
 	float TyreSmokeRate = 2.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Effects")
+	float DirtEffectRate = .8f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Effects")
+	float OilEffectRate = 1.f;
 
 };

@@ -164,10 +164,13 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 		}
 		else if (PhysMat == SandMaterial)
 		{
+			Data->FrictionCoefficient = 0.6f;
 			Data->SurfaceType = ESurfaceType::Sand;
 		}
 		else if (PhysMat == CarpetMaterial)
 		{
+			Data->FrictionCoefficient = 1.f;
+
 			Data->SurfaceType = ESurfaceType::Carpet;
 		}
 		else if (PhysMat == RoadMaterial)
@@ -175,6 +178,12 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 			Data->FrictionCoefficient = 1.f;
 
 			Data->SurfaceType = ESurfaceType::Road;
+		}
+		else if (PhysMat == OilMaterial)
+		{
+			Data->FrictionCoefficient = .1f;
+
+			Data->SurfaceType = ESurfaceType::Oil;
 		}
 		else
 		{
@@ -234,7 +243,7 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 				(FVector::UpVector * SuspensionLength/2) 				
 		);
 		
-		UpdateTyreSmoke(WheelType, false);
+		UpdateTyreSmoke(WheelType, ESurfaceType::None, false);
 	}
 }
 
@@ -380,14 +389,69 @@ void ABaseCar::ApplyWheelForces(EWheelType Wheel)
 	CarMesh->AddForceAtLocation(CombinedClampedWheelForce, Data->SurfaceLocation);			
 	
 	
-	if (ForceMagnitude / MaxWheelForce > TyreSmokeRate)
+	switch (Data->SurfaceType)
 	{
-		UpdateTyreSmoke(Wheel, true);
+		case ESurfaceType::Road:
+		{
+			if (ForceMagnitude / MaxWheelForce > TyreSmokeRate)
+			{
+				UpdateTyreSmoke(Wheel, Data->SurfaceType, true);
+			}
+			else
+			{
+				UpdateTyreSmoke(Wheel,  Data->SurfaceType,false);
+			}		
+			
+			break;
+		}
+		
+		case ESurfaceType::Sand:
+		{
+			if (ForceMagnitude / MaxWheelForce > DirtEffectRate)
+			{
+				UpdateTyreSmoke(Wheel, Data->SurfaceType, true);
+			}
+			else
+			{
+				UpdateTyreSmoke(Wheel,  Data->SurfaceType,false);
+			}		
+			break;
+		}
+		
+		case ESurfaceType::Dirt:
+		{
+			if (ForceMagnitude / MaxWheelForce > DirtEffectRate)
+			{
+				UpdateTyreSmoke(Wheel, Data->SurfaceType, true);
+			}
+			else
+			{
+				UpdateTyreSmoke(Wheel,  Data->SurfaceType,false);
+			}		
+			break;
+		}
+		
+		case ESurfaceType::Carpet:
+		{
+			break;
+		}
+		
+		case ESurfaceType::Oil:
+		{
+			if (ForceMagnitude / MaxWheelForce > OilEffectRate)
+			{
+				UpdateTyreSmoke(Wheel, Data->SurfaceType, true);
+			}
+			else
+			{
+				UpdateTyreSmoke(Wheel,  Data->SurfaceType,false);
+			}		
+			
+			break;	
+		}
+		
 	}
-	else
-	{
-		UpdateTyreSmoke(Wheel, false);
-	}		
+
 }
 
 void ABaseCar::ApplySteeringAngle(EWheelType Wheel)
