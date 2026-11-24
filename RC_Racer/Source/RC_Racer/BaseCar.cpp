@@ -12,8 +12,7 @@ ABaseCar::ABaseCar()
 
 	CarMesh = CreateDefaultSubobject<UStaticMeshComponent>("CarMesh");
 	RootComponent = CarMesh;
-	CarMesh->SetSimulatePhysics(true);
-	CarMesh->SetMassOverrideInKg(NAME_None, 1000.f);
+	
 	CarMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	CarMesh->SetCollisionResponseToAllChannels(ECR_Block);
 	
@@ -53,6 +52,8 @@ ABaseCar::ABaseCar()
 void ABaseCar::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CarMesh->SetSimulatePhysics(true);
 	
 	FWheelData& FLWheelData = WheelData[EWheelType::FL];	
 	FLWheelData.SuspensionLocation = FLWheel->GetRelativeLocation() + CarMesh->GetUpVector() * SuspensionLength/2;
@@ -187,7 +188,9 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 		}
 		else
 		{
-			Data->SurfaceType = ESurfaceType::None;		
+			Data->SurfaceType = ESurfaceType::None;	
+			Data->FrictionCoefficient = 1.f;
+
 		}
 
 		
