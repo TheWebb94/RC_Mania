@@ -72,6 +72,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateTyreSmoke(EWheelType Wheel, ESurfaceType Surface, bool bIsOn);
 
+	UFUNCTION(BlueprintCallable)
+	void SetEngineBoosted();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetEngineSlowed();
+	
+	UFUNCTION(BlueprintCallable)
+	void ResetEngine();
 	
 	
 	UPROPERTY()
@@ -86,6 +94,16 @@ public:
 	UPROPERTY()
 	bool bISHandbrakeOn = false;
 	
+	
+	UPROPERTY()
+	bool bIsSuspensionActive = true;
+	
+	// deactivates the suspension forces on jump for this length (used to stop car flipping when jumping)
+	UPROPERTY()
+	float SuspensionDeactivationTimer = 0.2f;
+	
+	UPROPERTY()
+	float SuspensionDeactivationTime = 0.2f;
 		
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TMap<EWheelType, FWheelData> WheelData;	
@@ -212,6 +230,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCar - Engine")
 	float MaxSpeed = 2000.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCar - Engine")
+	float StandardMaxSpeed = 2000.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCar - Engine")
+	float BoostedMaxSpeed = 2500.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCar - Engine")
+	float SlowedMaxSpeed = 1500.f;
 	
 	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")
     float ReverseMaxSpeed = 1500.f;
