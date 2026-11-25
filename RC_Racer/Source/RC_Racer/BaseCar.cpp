@@ -297,7 +297,15 @@ void ABaseCar::GetAccelerationForce(EWheelType Wheel)
 			AccelerationForce = -Data->WheelForwardVector * (EngineReductionRate * EnginePower * ThrottleAmount);
 		}
 		 	
-		Data->WantedAccelerationForce = AccelerationForce;			
+		if (Data->SurfaceType == ESurfaceType::GrippySurface)
+		{
+			Data->WantedAccelerationForce = AccelerationForce * BoostedEnginePowerRate;	
+		}
+		else
+		{
+			Data->WantedAccelerationForce = AccelerationForce;	
+		}
+					
 	}
 	else
 	{
@@ -597,14 +605,12 @@ void ABaseCar::ApplyWheelRotation(EWheelType Wheel, float DeltaTime)
 
 void ABaseCar::SetEngineBoosted()
 {
-	EnginePower = BoostedEnginePower;
-	MaxSpeed = BoostedMaxSpeed;
+	EnginePower *= BoostedEnginePowerRate;
 }
 
 void ABaseCar::SetEngineSlowed()
 {
-	EnginePower = SlowedEnginePower;
-	MaxSpeed = SlowedMaxSpeed;
+	EnginePower *= SlowedEnginePower;
 }
 
 void ABaseCar::ResetEngine()

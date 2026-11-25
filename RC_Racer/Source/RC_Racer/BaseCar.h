@@ -223,10 +223,10 @@ public:
 	float StandardEnginePower =  200000.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Engine")
-	float BoostedEnginePower = 300000.f;
+	float BoostedEnginePowerRate = 1.2f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Engine")
-	float SlowedEnginePower = 100000.f;
+	float SlowedEnginePower = 0.8f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCar - Engine")
 	float MaxSpeed = 2000.f;
@@ -235,10 +235,10 @@ public:
 	float StandardMaxSpeed = 2000.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCar - Engine")
-	float BoostedMaxSpeed = 2500.f;
+	float BoostedMaxSpeedRate = 1.2f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCar - Engine")
-	float SlowedMaxSpeed = 1500.f;
+	float SlowedMaxSpeedRate = .8f;
 	
 	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")
     float ReverseMaxSpeed = 1500.f;
