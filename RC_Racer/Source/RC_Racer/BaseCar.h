@@ -86,8 +86,13 @@ public:
 	UPROPERTY()
 	bool bISHandbrakeOn = false;
 	
+		
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TMap<EWheelType, FWheelData> WheelData;	
 	
-	
+	//////////////////////////////
+    // Mesh
+    /////////////////////////////	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Meshes")
 	UStaticMeshComponent* CarMesh;
 	
@@ -117,7 +122,9 @@ public:
 	FVector BRWheelLocation;
 	
 	
-	
+	//////////////////////////////
+	// Surfaces
+	/////////////////////////////
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
 	TObjectPtr<UPhysicalMaterial> RoadMaterial;
 	
@@ -133,13 +140,34 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
     TObjectPtr<UPhysicalMaterial> OilMaterial;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
     TObjectPtr<UPhysicalMaterial> GrippyMaterial;
 	
+
+	//////////////////////////////
+	// Surface Friction
+	/////////////////////////////
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - SurfaceFriction")
+	float RoadFriction = 1.0f;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TMap<EWheelType, FWheelData> WheelData;	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - SurfaceFriction")
+	float CarpetFriction = 1.0f;	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - SurfaceFriction")
+	float DirtFriction = 0.7f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - SurfaceFriction")
+	float SandFriction =  0.6f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - SurfaceFriction")
+	float OilFriction = 0.1f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - SurfaceFriction")
+	float GrippyFriction = 1.2f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - SurfaceFriction")
+	float NoneFriction = 1.f;
+	
 	
 	
 	//////////////////////////////
@@ -159,7 +187,7 @@ public:
 	// Steering
 	/////////////////////////////
 	UPROPERTY(EditAnywhere, Category="BaseCar - Steering")
-	float MaxSteeringAngle = 30.f;
+	float MaxSteeringAngle = 35.f;
 	
 	UPROPERTY()
 	float WheelBase = 200.f;
@@ -171,19 +199,28 @@ public:
 	// Engine
 	/////////////////////////////
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Engine")
-	float EnginePower = 400000.f;
+	float EnginePower = 200000.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Engine")
+	float StandardEnginePower =  200000.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Engine")
+	float BoostedEnginePower = 300000.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BaseCar - Engine")
+	float SlowedEnginePower = 100000.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCar - Engine")
-	float MaxSpeed = 3000.f;
+	float MaxSpeed = 2000.f;
 	
 	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")
-    float ReverseMaxSpeed = 2000.f;
+    float ReverseMaxSpeed = 1500.f;
 	
 	UPROPERTY(BlueprintReadWrite, Category = "BaseCar - Engine")
 	bool bIsInReverse = false;
 	
 	UPROPERTY(EditAnywhere, Category = "BaseCar - Engine")
-	float MinSpeedForReverse = 20.f;
+	float MinSpeedForReverse = 100.f;
 	
 	
 	//////////////////////////////

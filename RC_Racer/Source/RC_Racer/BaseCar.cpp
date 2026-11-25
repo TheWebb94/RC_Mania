@@ -160,43 +160,42 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 
 		if (PhysMat == DirtMaterial)
 		{
-			Data->FrictionCoefficient = 0.7f;
+			Data->FrictionCoefficient = DirtFriction;
 			Data->SurfaceType = ESurfaceType::Dirt;
 		}
 		else if (PhysMat == SandMaterial)
 		{
-			Data->FrictionCoefficient = 0.6f;
+			Data->FrictionCoefficient = SandFriction;
 			Data->SurfaceType = ESurfaceType::Sand;
 		}
 		else if (PhysMat == CarpetMaterial)
 		{
-			Data->FrictionCoefficient = 1.f;
+			Data->FrictionCoefficient = CarpetFriction;
 
 			Data->SurfaceType = ESurfaceType::Carpet;
 		}
 		else if (PhysMat == RoadMaterial)
 		{
-			Data->FrictionCoefficient = 1.f;
+			Data->FrictionCoefficient = RoadFriction;
 
 			Data->SurfaceType = ESurfaceType::Road;
 		}
 		else if (PhysMat == OilMaterial)
 		{
-			Data->FrictionCoefficient = .1f;
+			Data->FrictionCoefficient = OilFriction;
 
 			Data->SurfaceType = ESurfaceType::Oil;
 		}
 		else if (PhysMat == GrippyMaterial)
 		{
-			Data->FrictionCoefficient = 1.5f;
+			Data->FrictionCoefficient = GrippyFriction;
 
 			Data->SurfaceType = ESurfaceType::GrippySurface;
 		}
 		else
 		{
 			Data->SurfaceType = ESurfaceType::None;	
-			Data->FrictionCoefficient = 1.f;
-
+			Data->FrictionCoefficient = NoneFriction;
 		}
 
 		
@@ -458,7 +457,35 @@ void ABaseCar::ApplyWheelForces(EWheelType Wheel)
 			
 			break;	
 		}
-		
+
+
+		case ESurfaceType::None:
+		{
+			if (ForceMagnitude / MaxWheelForce > TyreSmokeRate)
+			{
+				UpdateTyreSmoke(Wheel, Data->SurfaceType, true);
+			}
+			else
+			{
+				UpdateTyreSmoke(Wheel, Data->SurfaceType, false);
+			}
+
+			break;
+		}
+
+		case ESurfaceType::GrippySurface:
+		{
+			if (ForceMagnitude / MaxWheelForce > TyreSmokeRate)
+			{
+				UpdateTyreSmoke(Wheel, Data->SurfaceType, true);
+			}
+			else
+			{
+				UpdateTyreSmoke(Wheel, Data->SurfaceType, false);
+			}
+
+			break;
+		}
 	}
 
 }
