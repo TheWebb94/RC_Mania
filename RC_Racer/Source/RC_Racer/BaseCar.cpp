@@ -84,11 +84,6 @@ void ABaseCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);	
 	
-	// for each wheel apply suspension forces using relevant wheel data
-	for (const auto& Pair : WheelData)
-	{
-		ApplySuspensionForce(Pair.Key, DeltaTime);
-	}	
 	
 	// for each wheel apply Steering using relevant wheel data
 	for (const auto& Pair : WheelData)
@@ -97,37 +92,52 @@ void ABaseCar::Tick(float DeltaTime)
 	}
 	
 	
-	
-	// for each wheel get Brake forces using relevant wheel data
-	for (const auto& Pair : WheelData)
+	if (bIsSuspensionActive)
 	{
-		GetBrakeForce(Pair.Key);
-	}
+		// for each wheel apply suspension forces using relevant wheel data
+		for (const auto& Pair : WheelData)
+		{
+			ApplySuspensionForce(Pair.Key, DeltaTime);
+		}		
+		
+		// for each wheel get Brake forces using relevant wheel data
+		for (const auto& Pair : WheelData)
+		{
+			GetBrakeForce(Pair.Key);
+		}
 	
-	// for each wheel apply Grip forces using relevant wheel data
-	for (const auto& Pair : WheelData)
-	{
-		GetGripForce(Pair.Key);
-	}
+		// for each wheel apply Grip forces using relevant wheel data
+		for (const auto& Pair : WheelData)
+		{
+			GetGripForce(Pair.Key);
+		}
 
-	// for each wheel get Acceleration forces using relevant wheel data
-	for (const auto& Pair : WheelData)
-	{
-		GetAccelerationForce(Pair.Key);
-	}
+		// for each wheel get Acceleration forces using relevant wheel data
+		for (const auto& Pair : WheelData)
+		{
+			GetAccelerationForce(Pair.Key);
+		}
 	
-	for (const auto& Pair : WheelData)
+		for (const auto& Pair : WheelData)
+		{
+			ApplyWheelForces(Pair.Key);
+		}
+	}
+	else
 	{
-		ApplyWheelForces(Pair.Key);
+		// timer for deactivating suspension after jumping
+		SuspensionDeactivationTimer -= DeltaTime;
+		if (SuspensionDeactivationTimer <= 0)
+		{
+			SuspensionDeactivationTimer = SuspensionDeactivationTime;
+			bIsSuspensionActive = true;
+		}
 	}
 	
 	for (const auto& Pair : WheelData)
 	{
 		ApplyWheelRotation(Pair.Key, DeltaTime);
-	}
-	
-	
-	
+	}	
 }
 
 
@@ -171,26 +181,23 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 		else if (PhysMat == CarpetMaterial)
 		{
 			Data->FrictionCoefficient = CarpetFriction;
-
 			Data->SurfaceType = ESurfaceType::Carpet;
 		}
 		else if (PhysMat == RoadMaterial)
 		{
 			Data->FrictionCoefficient = RoadFriction;
-
 			Data->SurfaceType = ESurfaceType::Road;
 		}
 		else if (PhysMat == OilMaterial)
 		{
 			Data->FrictionCoefficient = OilFriction;
-
 			Data->SurfaceType = ESurfaceType::Oil;
 		}
 		else if (PhysMat == GrippyMaterial)
 		{
 			Data->FrictionCoefficient = GrippyFriction;
-
 			Data->SurfaceType = ESurfaceType::GrippySurface;
+			
 		}
 		else
 		{
@@ -290,7 +297,15 @@ void ABaseCar::GetAccelerationForce(EWheelType Wheel)
 			AccelerationForce = -Data->WheelForwardVector * (EngineReductionRate * EnginePower * ThrottleAmount);
 		}
 		 	
-		Data->WantedAccelerationForce = AccelerationForce;			
+		if (Data->SurfaceType == ESurfaceType::GrippySurface)
+		{
+			Data->WantedAccelerationForce = AccelerationForce * BoostedEnginePowerRate;	
+		}
+		else
+		{
+			Data->WantedAccelerationForce = AccelerationForce;	
+		}
+					
 	}
 	else
 	{
@@ -588,6 +603,22 @@ void ABaseCar::ApplyWheelRotation(EWheelType Wheel, float DeltaTime)
 	}
 }
 
+void ABaseCar::SetEngineBoosted()
+{
+	EnginePower *= BoostedEnginePowerRate;
+}
+
+void ABaseCar::SetEngineSlowed()
+{
+	EnginePower *= SlowedEnginePower;
+}
+
+void ABaseCar::ResetEngine()
+{
+	EnginePower = StandardEnginePower;
+	MaxSpeed = StandardMaxSpeed;
+}
+
 
 void ABaseCar::Accelerate(float Throttle)
 {
@@ -660,6 +691,8 @@ void ABaseCar::Jump()
 	{
 		FVector UpImpulse = FVector::UpVector * JumpStrength;
 		CarMesh->AddImpulse(UpImpulse);
+		CarMesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+		bIsSuspensionActive = false;
 	}
 
 }
