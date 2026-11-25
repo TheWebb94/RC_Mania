@@ -132,6 +132,10 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
     TObjectPtr<UPhysicalMaterial> OilMaterial;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="BaseCar - Surface")
+    TObjectPtr<UPhysicalMaterial> GrippyMaterial;
 	
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

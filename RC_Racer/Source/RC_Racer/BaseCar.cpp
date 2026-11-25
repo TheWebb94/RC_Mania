@@ -186,6 +186,12 @@ void ABaseCar::ApplySuspensionForce(EWheelType WheelType, float DeltaTime)
 
 			Data->SurfaceType = ESurfaceType::Oil;
 		}
+		else if (PhysMat == GrippyMaterial)
+		{
+			Data->FrictionCoefficient = 1.5f;
+
+			Data->SurfaceType = ESurfaceType::GrippySurface;
+		}
 		else
 		{
 			Data->SurfaceType = ESurfaceType::None;	

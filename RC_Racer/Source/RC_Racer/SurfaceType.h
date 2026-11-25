@@ -13,6 +13,7 @@ enum class ESurfaceType : uint8
 	None,
 	Road,
 	Carpet,
+	GrippySurface,
 	Sand,
 	Dirt,
 	Oil
