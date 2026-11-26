@@ -692,6 +692,7 @@ void ABaseCar::Jump()
 		FVector UpImpulse = FVector::UpVector * JumpStrength;
 		CarMesh->AddImpulse(UpImpulse);
 		CarMesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+		//CarMesh->SetRelativeRotation(FRotator(0, CarMesh->GetRelativeRotation().Yaw, 0));
 		bIsSuspensionActive = false;
 	}
 
